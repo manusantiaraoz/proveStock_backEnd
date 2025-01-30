@@ -18,7 +18,7 @@ enum Role {
   USER
 }
 
-model User{
+model User{ //usuarios
   id String @default(uuid()) @id
   name String
   email String @unique
@@ -34,7 +34,7 @@ model User{
   budget Budget []
 }
 
-model Client{
+model Client{ //clientes
   id String @default(uuid()) @id
   name String
   lastName String
@@ -47,7 +47,7 @@ model Client{
   updatedAt  DateTime  @updatedAt
   budget Budget []
 }
-model Provider{
+model Provider{//proveedores
   id String @default(uuid()) @id
   name String
   dni String 
@@ -59,7 +59,7 @@ model Provider{
   updatedAt  DateTime  @updatedAt
   product Product[]
 }
-model Product{
+model Product{ //productos
   id String @default(uuid()) @id
   name String
   detail String ?
@@ -73,7 +73,7 @@ model Product{
   updatedAt  DateTime  @updatedAt
   budget Budget[] @relation("productBudget")
 }
-model Budget{
+model Budget{  //presupuesto
   id String @default(uuid())@id
   user User @relation(fields: [userId], references: [id])
   userId String
