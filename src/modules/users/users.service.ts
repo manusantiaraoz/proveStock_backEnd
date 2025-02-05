@@ -22,7 +22,7 @@ export class UsersService {
     });
   
   if(findUser){
-    throw new Error ('email ya registrado')
+    throw new Error ('email ya registrado, intente con otro')
   }
 
 await this.prisma.user.create({

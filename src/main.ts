@@ -3,6 +3,7 @@ import { corsOptions } from './config/cors.config';
 import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './modules/app/app.module';
 import { ConfigService } from '@nestjs/config';
+import { LogguerInterceptor } from './common/interceptors/logguer.interceptors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,6 +28,8 @@ async function bootstrap() {
   const PORT = configService.get<number>('PORT');
   const NODE_ENV = configService.get<string>('NODE_ENV');
 
+  app.useGlobalInterceptors(new LogguerInterceptor());
+  
   await app.listen(PORT, () => {
     Logger.log(
       `Application running the port: http://localhost:${PORT}`,

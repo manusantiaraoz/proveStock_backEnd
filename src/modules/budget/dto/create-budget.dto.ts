@@ -10,6 +10,7 @@ export class CreateBudgetDto {
     @IsUUID()
     @IsNotEmpty({ message: 'El campo usuario no puede estar vacio' })
     userId:string;
+    
     @IsUUID()
     @IsNotEmpty({ message: 'El campo usuario no puede estar vacio' })
     clientId: string;

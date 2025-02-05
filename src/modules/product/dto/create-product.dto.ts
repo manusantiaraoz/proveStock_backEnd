@@ -22,8 +22,7 @@ export class CreateProductDto {
     @MaxLength(500, {
       message: 'La detalle no puede exceder los 500 caracteres',
     })
-    detail: string;
-    
+    detail: string;   
     @IsNumber({maxDecimalPlaces:2})
     @IsPositive({message: 'el numero ingresado no debe ser negativo'})
     @IsNotEmpty()

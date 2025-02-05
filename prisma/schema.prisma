@@ -50,7 +50,7 @@ model Client{ //clientes
 model Provider{//proveedores
   id String @default(uuid()) @id
   name String
-  dni String 
+  dni String @unique 
   phone String
   address String 
   email String 
@@ -63,14 +63,14 @@ model Product{ //productos
   id String @default(uuid()) @id
   name String
   detail String ?
-  p_purchase String
-  p_sale String 
+  p_purchase Float
+  p_sale Float 
   provider Provider @relation(fields: [providerId], references: [id])
   providerId String
   isDeleted Boolean @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
-  budget Budget[] @relation("productBudget")
+  productLine ProductLine[]
 }
 model Budget{  //presupuesto
   id String @default(uuid())@id
@@ -79,8 +79,17 @@ model Budget{  //presupuesto
   client Client @relation(fields: [clientId], references: [id])
   clientId String
   detail String 
-  product Product[] @relation("productBudget")
+  productLine ProductLine[]
   isDeleted Boolean @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
+model ProductLine{
+  id String @default(uuid()) @id
+  budget Budget @relation(fields: [budgetId], references: [id])
+  budgetId String
+  product Product @relation(fields:[productId], references:[id])
+  productId String
+  quantity Int
+  unit_price Float
 }
