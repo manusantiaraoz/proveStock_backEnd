@@ -80,6 +80,7 @@ model Budget{  //presupuesto
   clientId String
   detail String 
   productLine ProductLine[]
+  totalAmount Float
   isDeleted Boolean @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -92,4 +93,6 @@ model ProductLine{
   productId String
   quantity Int
   unit_price Float
+  total_price Float
+  isDeleted Boolean @default(false)
 }

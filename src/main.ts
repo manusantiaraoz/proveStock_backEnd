@@ -4,6 +4,7 @@ import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/comm
 import { AppModule } from './modules/app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { LogguerInterceptor } from './common/interceptors/logguer.interceptors';
+import { setupSwagger } from './config/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,7 @@ async function bootstrap() {
       ignoreDecorators: true,
     })
   )
+  setupSwagger(app);
 
   const configService = app.get(ConfigService);
 

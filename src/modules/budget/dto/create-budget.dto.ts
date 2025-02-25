@@ -1,10 +1,32 @@
 import {
+  IsArray,
     IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsPositive,
     IsString,
     IsUUID,
     MaxLength,
     MinLength,
   } from 'class-validator';
+
+
+  export class CreateProductLineDto{
+    @IsOptional()
+    budgetId: string;
+    @IsUUID()
+    @IsNotEmpty()
+    productId:string;
+    @IsPositive()
+   @IsNotEmpty()
+    quantity: number;
+    @IsPositive()
+    @IsNotEmpty()
+    unit_price: number;
+    @IsPositive()
+    @IsNotEmpty()
+    total_price: number
+  }
 
 export class CreateBudgetDto {
     @IsUUID()
@@ -22,5 +44,13 @@ export class CreateBudgetDto {
       message: 'el campo detalle debe tener como maximo 500',
     })
     detail: string;
+
+    @IsNumber()
+    @IsNotEmpty({message: 'no se puede crear presupuesto sin un total'})
+    totalAmount: number;
+
+    @IsArray()
+    @IsNotEmpty({message: 'no se puede crear presupuesto sin productos'})
+    productLine: CreateProductLineDto[];
     
 }
