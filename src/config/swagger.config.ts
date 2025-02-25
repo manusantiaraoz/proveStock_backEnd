@@ -10,7 +10,7 @@ export const setupSwagger = (app): void => {
   }
 
   const config = new DocumentBuilder()
-    .setTitle('API NESTJS')
+    .setTitle('API NESTJS - proveStock')
     .setDescription('proyecto Final ISET')
     .setVersion('1.0')
     .addTag('RUTAS')
