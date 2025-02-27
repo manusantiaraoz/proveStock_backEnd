@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBudgetDto } from './dto/create-budget.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { PrinterService } from '../printer/printer.service';
+import { budgetPrinter } from '../printer/documents';
 
 
 
 @Injectable()
 export class BudgetService {
-  constructor (private readonly prisma:PrismaService){}
+  constructor (
+    private readonly prisma:PrismaService,
+    private readonly printerService: PrinterService
+  ){}
 
   async recoverDataBudge(budgetId:string){
     const dataBudget = await this.prisma.budget.findUnique({
@@ -17,6 +22,7 @@ export class BudgetService {
       select:{
         detail: true,
         totalAmount:true,
+        createdAt:true,
         client:{
           select:{
             name: true,
@@ -58,24 +64,43 @@ export class BudgetService {
 
 
 
-  async create(budget: CreateBudgetDto) {
-    const newbudget = await this.prisma.$transaction(async (tx)=>{
+  async create(budget: CreateBudgetDto, userId) {
+    let totalAmount=0;
+    for (const product of budget.productLine){
+       const producto = await this.prisma.product.findFirst({
+        where:{
+          id: product.productId
+        }
+      }
+      )
+      let parcial= producto.p_sale*product.quantity;
+      totalAmount= totalAmount + parcial
+    }
+    
+   const newbudget= await this.prisma.$transaction(async (tx)=>{
       const presupuesto = await tx.budget.create({
         data:{
-          userId: budget.userId,
+          userId,
           clientId: budget.clientId,
           detail: budget.detail,
-          totalAmount: budget.totalAmount
+          totalAmount: totalAmount
         }
       });
       for (const product of budget.productLine){
+        const producto = await this.prisma.product.findFirst({
+          where:{
+            id: product.productId
+          }
+        }
+        )
+      
         await tx.productLine.create({
           data:{
             budgetId: presupuesto.id,
             productId: product.productId,
             quantity: product.quantity,
-            unit_price: product.unit_price,
-            total_price: product.total_price
+            unit_price: producto.p_sale,
+            total_price: producto.p_sale * product.quantity
           }
         })
       }
@@ -85,12 +110,12 @@ export class BudgetService {
     return datita
   }
 
-  async findAll() {
+  async findAll(userId) {
     try{
 
       const dataBudget = await this.prisma.budget.findMany({
         where:{
-          
+          userId,
           isDeleted:false
         },
         select:{
@@ -160,5 +185,18 @@ export class BudgetService {
     }catch(e){
       throw new Error(e);
     }
+  }
+
+  async printBudget (id: string):Promise<Buffer>{
+    try{
+      const presupuesto = await this.recoverDataBudge(id);
+      const pdfFormat = await budgetPrinter(presupuesto)
+      const pdfDetail = await this.printerService.createPdf(pdfFormat) 
+      return pdfDetail
+
+    }catch(e){
+      throw new Error(e)
+    }
+
   }
 }

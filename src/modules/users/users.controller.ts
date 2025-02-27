@@ -10,9 +10,9 @@ import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { ApiCustomOperation } from 'src/common/decorators/swagger.decorator';
 
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@ApiBearerAuth('access-token')
-@Roles(RoleEnum.USER)
+//@UseGuards(JwtAuthGuard, RolesGuard)
+//@ApiBearerAuth('access-token')
+//@Roles(RoleEnum.USER)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -24,7 +24,7 @@ export class UsersController {
          responseStatus: 201,
          responseDescription: 'proveedor creado',
        })
-  @Roles(RoleEnum.SUPERADMIN)
+ // @Roles(RoleEnum.SUPERADMIN)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);

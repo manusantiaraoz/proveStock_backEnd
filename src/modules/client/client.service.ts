@@ -9,11 +9,12 @@ export class ClientService {
     private readonly prisma:PrismaService
   ){}
 
-  async create(newClient: CreateClientDto) {
+  async create(newClient: CreateClientDto, userId) {
     try{
-      const findClient = await this.prisma.client.findUnique({
+      const findClient = await this.prisma.client.findFirst({
         where:{
           dni: newClient.dni,
+          userId
         }
       })
 
@@ -22,7 +23,10 @@ export class ClientService {
       }
       
       await this.prisma.client.create({
-        data: newClient,
+        data: {
+          ...newClient,
+          userId
+        }
       })
       return newClient
 
@@ -31,10 +35,11 @@ export class ClientService {
     }
   }
 
-  async findAll() {
+  async findAll(userId) {
     try{
       const client = await this.prisma.client.findMany({
         where:{
+          userId,
           isDeleted: false,
         }
       }) 

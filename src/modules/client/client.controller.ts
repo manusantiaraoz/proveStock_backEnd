@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -24,8 +24,9 @@ export class ClientController {
        responseDescription: 'presupuesto creado',
      })
   @Post()
-  create(@Body() createClientDto: CreateClientDto) {
-    return this.clientService.create(createClientDto);
+  create(@Body() createClientDto: CreateClientDto, @Req() req) {
+    const {userId} = req.user;
+    return this.clientService.create(createClientDto, userId);
   }
 
   @ApiCustomOperation({
@@ -34,8 +35,9 @@ export class ClientController {
     responseDescription: 'clientes found',
   })
   @Get()
-  findAll() {
-    return this.clientService.findAll();
+  findAll(@Req() req) {
+    const {userId}=req.user;
+    return this.clientService.findAll(userId);
   }
 
   

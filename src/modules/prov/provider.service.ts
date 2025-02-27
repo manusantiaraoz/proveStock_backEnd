@@ -9,11 +9,12 @@ export class ProviderService {
     private readonly prisma: PrismaService
   ){}
   
-  async create(newProv: CreateProviderDto) {
+  async create(newProv: CreateProviderDto, userId) {
     try{
-      const findClient = await this.prisma.provider.findUnique({
+      const findClient = await this.prisma.provider.findFirst({
         where:{
           dni: newProv.dni,
+          userId
         }
       })
 
@@ -22,7 +23,10 @@ export class ProviderService {
       }
       
       await this.prisma.provider.create({
-        data: newProv,
+        data: {
+          ...newProv,
+          userId
+        }
       })
       return newProv
 
@@ -31,11 +35,12 @@ export class ProviderService {
     }
   }
 
-  findAll() {
+ async findAll(userId) {
     try{
-      const provider = this.prisma.provider.findMany({
+      const provider = await this.prisma.provider.findMany({
         where:{
           isDeleted: false,
+          userId
         }
       }) 
       if (!provider){

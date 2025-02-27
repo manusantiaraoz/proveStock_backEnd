@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { ProviderService } from './provider.service';
 import { CreateProviderDto } from './dto/create-provider.dto';
 import { UpdateProviderDto } from './dto/update-provider.dto';
@@ -24,8 +24,9 @@ export class ProviderController {
        responseDescription: 'proveedor creado',
      })
   @Post()
-  create(@Body() createProviderDto: CreateProviderDto) {
-    return this.providerService.create(createProviderDto);
+  create(@Body() createProviderDto: CreateProviderDto, @Req() req) {
+      const {userId} = req.user;
+    return this.providerService.create(createProviderDto, userId);
   }
 
   @ApiCustomOperation({
@@ -34,8 +35,9 @@ export class ProviderController {
     responseDescription: 'presupuesto found',
   })
   @Get()
-  findAll() {
-    return this.providerService.findAll();
+  findAll(@Req() req) {
+    const {userId} = req.user;
+    return this.providerService.findAll(userId);
   }
 
   @ApiCustomOperation({

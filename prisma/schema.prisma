@@ -32,6 +32,9 @@ model User{ //usuarios
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   budget Budget []
+  product Product[]
+  client Client []
+  provider Provider[]
 }
 
 model Client{ //clientes
@@ -40,17 +43,19 @@ model Client{ //clientes
   lastName String
   phone String
   address String 
-  dni String @unique
-  email String @unique
+  dni String 
+  email String 
   isDeleted Boolean @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   budget Budget []
+  userId String
+  user User @relation(fields: [userId], references: [id])
 }
 model Provider{//proveedores
   id String @default(uuid()) @id
   name String
-  dni String @unique 
+  dni String 
   phone String
   address String 
   email String 
@@ -58,6 +63,8 @@ model Provider{//proveedores
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   product Product[]
+  userId String
+  user User @relation(fields: [userId], references: [id])
 }
 model Product{ //productos
   id String @default(uuid()) @id
@@ -71,6 +78,8 @@ model Product{ //productos
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   productLine ProductLine[]
+  userId String
+  user User @relation(fields: [userId], references: [id])
 }
 model Budget{  //presupuesto
   id String @default(uuid())@id

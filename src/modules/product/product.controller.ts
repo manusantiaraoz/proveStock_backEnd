@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -26,8 +26,9 @@ export class ProductController {
          responseDescription: 'producto creado',
        })
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  create(@Body() createProductDto: CreateProductDto, @Req() req) {
+    const {userId} = req.user;
+    return this.productService.create(createProductDto, userId);
   }
 
   @ApiCustomOperation({
@@ -36,8 +37,9 @@ export class ProductController {
     responseDescription: 'provedores found',
   })
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Req() req ) {
+    const {userId} = req.user
+    return this.productService.findAll(userId);
   }
 
   @ApiCustomOperation({

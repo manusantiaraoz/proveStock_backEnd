@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res } from '@nestjs/common';
 import { BudgetService } from './budget.service';
 import { CreateBudgetDto } from './dto/create-budget.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
@@ -7,6 +7,7 @@ import { RoleEnum } from 'src/common/constants';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { ApiCustomOperation } from 'src/common/decorators/swagger.decorator';
+import { Response } from 'express';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth('access-token')
@@ -23,8 +24,9 @@ export class BudgetController {
      responseDescription: 'presupuesto creado',
    })
   @Post()
-  create(@Body() createBudgetDto: CreateBudgetDto) {
-    return this.budgetService.create(createBudgetDto);
+  create(@Body() createBudgetDto: CreateBudgetDto, @Req() req) {
+    const {userId}=req.user
+    return this.budgetService.create(createBudgetDto, userId);
   }
 
   @ApiCustomOperation({
@@ -33,8 +35,9 @@ export class BudgetController {
     responseDescription: 'presupuesto found',
   })
   @Get()
-  findAll() {
-    return this.budgetService.findAll();
+  findAll(@Req() req) {
+    const {userId} = req.user;
+    return this.budgetService.findAll(userId);
   }
 
   @ApiCustomOperation({
@@ -55,5 +58,20 @@ export class BudgetController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.budgetService.remove(id);
+  }
+  @Post('print/:id')
+  async print(@Param('id') id:string, @Res() res:Response):Promise<void>{
+    try {
+      const pdfBuffer = (await this.budgetService.printBudget(id));
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=carrito_confirm.pdf');
+      res.status(200).send(pdfBuffer);
+  } catch (error) {
+      console.error(error);
+      res.status(500).send({
+          message: 'Error al generar el PDF',
+          error: error.message, 
+      });
+  }
   }
 }

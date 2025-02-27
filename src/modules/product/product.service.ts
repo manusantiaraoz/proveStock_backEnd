@@ -7,19 +7,27 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ProductService {
   constructor(private readonly prisma: PrismaService)
   {}
-  async create(newProduc: CreateProductDto) {
+  async create(newProduc: CreateProductDto, userId:string) {
+    const {name, detail,p_purchase,p_sale,providerId} = newProduc;
+   
     try{
       await this.prisma.product.create({
         data: {
-          name: newProduc.name,
-          detail: newProduc.detail,
-          p_purchase: newProduc.p_purchase,
-          p_sale: newProduc.p_sale,
+          name,
+          detail,
+          p_purchase,
+          p_sale,
           provider: {
             connect: {
-              id: newProduc.providerId
+              id:providerId
+            }
+          },
+          user:{
+            connect:{
+              id:userId
             }
           }
+          
         }
       })
       return newProduc;
@@ -28,11 +36,12 @@ export class ProductService {
     }
   }
 
-  async findAll() {
+  async findAll(userId) {
     try{
-      const product = this.prisma.product.findMany({
+      const product =await this.prisma.product.findMany({
         where:{
           isDeleted: false,
+          userId
         },
         include: {
           provider: true
