@@ -119,6 +119,7 @@ export class BudgetService {
           isDeleted:false
         },
         select:{
+          id:true,
           detail: true,
           totalAmount:true,
           client:{
