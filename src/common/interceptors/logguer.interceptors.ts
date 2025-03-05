@@ -32,7 +32,7 @@ import {
             response.statusCode,
             formatDate,
           );
-         // console.log('Response:', data);
+         console.log('Response:', data);
         }),
       );
     }

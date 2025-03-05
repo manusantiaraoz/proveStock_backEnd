@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { hashPassword } from 'src/utils/encryption';
+import { comparePassword, hashPassword } from 'src/utils/encryption';
 
 @Injectable()
 export class UsersService {
@@ -69,18 +69,43 @@ password: await  hashPassword(newUser.password)
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-   try{
-    const updateUser = await this.prisma.user.update({
-      where:{
-        id,
-      },
-      data:updateUserDto,
-    });
-    return updateUser;
-   }catch(e){
-    throw new Error(e);
-   }
+    try {
+      const { email, password } = updateUserDto;
+      const findUser = await this.prisma.user.findUnique({
+        where: {
+          email, 
+        },
+      });
+
+      if (!findUser) {
+        throw new Error('Usuario no encontrado.');
+      }
+
+
+      let updatedPassword = findUser.password; 
+
+      if (password) {
+        
+        updatedPassword = await hashPassword(password);
+      }
+
+      
+      const updateUser = await this.prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          ...updateUserDto,
+          password: updatedPassword, 
+        },
+      });
+
+      return updateUser;
+    } catch (e) {
+      throw new Error(e.message); 
+    }
   }
+
 
   async remove(id: string) {
     try{

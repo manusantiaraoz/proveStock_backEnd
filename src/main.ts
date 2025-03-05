@@ -19,7 +19,7 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector),{
-      excludePrefixes: ['password', 'createdAt', 'updatedAt', 'isDeleted', 'isActive'],
+      excludePrefixes: ['password', 'updatedAt'],
       ignoreDecorators: true,
     })
   )

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Options, Res, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -8,15 +8,27 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { ApiCustomOperation } from 'src/common/decorators/swagger.decorator';
+import { Response, Request } from 'express';
 
-
-//@UseGuards(JwtAuthGuard, RolesGuard)
-//@ApiBearerAuth('access-token')
-//@Roles(RoleEnum.USER)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth('access-token')
+@Roles(RoleEnum.USER)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
+   // Maneja peticiones OPTIONS para todas las rutas en este controlador
+   @Options('*')
+   preflight(@Res() res: Response, @Req() req: Request): void {
+     console.log('Solicitud OPTIONS recibida en UsersController');
+     console.log('Headers de la solicitud:', req.headers);
+     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,PATCH,DELETE,OPTIONS');
+     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+     res.setHeader('Access-Control-Allow-Credentials', 'true');
+     res.setHeader('Access-Control-Max-Age', '3600');
+     res.status(204).send();
+   }
+ 
   @ApiBody({type: CreateUserDto})
       @ApiCustomOperation({
          summary: 'crea un nuevo proveedor',
@@ -24,7 +36,7 @@ export class UsersController {
          responseStatus: 201,
          responseDescription: 'proveedor creado',
        })
- // @Roles(RoleEnum.SUPERADMIN)
+  @Roles(RoleEnum.SUPERADMIN)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
