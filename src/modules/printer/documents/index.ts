@@ -87,7 +87,7 @@ export const budgetPrinter = async (presupuesto: any): Promise<TDocumentDefiniti
      
     },
     {
-      text: ' detalle:',
+      text: '',
       marginTop: 5,
       marginBottom: 10,
     },
@@ -99,15 +99,15 @@ export const budgetPrinter = async (presupuesto: any): Promise<TDocumentDefiniti
       layout: 'lightHorizontalLines', // layout para la primer tabla
     }, 
     {
-      text: `total General ${totalAmount}`,
-      alignment: 'right',
-      marginTop: 10,
-      style: 'subHeader',
-    },
-    {
       text: `observaciones: ${detail} `,
       alignment: 'center',
       marginTop: 4,
+      style: 'subHeader',
+    },
+    {
+      text: `total General ${totalAmount}`,
+      alignment: 'right',
+      marginTop: 10,
       style: 'subHeader',
     },
     {

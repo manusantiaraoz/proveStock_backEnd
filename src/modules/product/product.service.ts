@@ -8,7 +8,7 @@ export class ProductService {
   constructor(private readonly prisma: PrismaService)
   {}
   async create(newProduc: CreateProductDto, userId:string) {
-    const {name, detail,p_purchase,p_sale,providerId} = newProduc;
+    const {name, detail,p_purchase,p_sale,stock,providerId} = newProduc;
    
     try{
       await this.prisma.product.create({
@@ -17,6 +17,7 @@ export class ProductService {
           detail,
           p_purchase,
           p_sale,
+          stock,
           provider: {
             connect: {
               id:providerId
@@ -86,6 +87,7 @@ export class ProductService {
           detail: newProduc.detail,
           p_purchase: newProduc.p_purchase,
           p_sale: newProduc.p_sale,
+          stock: newProduc.stock,
           provider: {
             connect: {
               id: newProduc.providerId

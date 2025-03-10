@@ -17,15 +17,19 @@ enum Role {
   SUPERADMIN
   USER
 }
+enum Status{
+  PENDING
+  CONFIRM
+}
 
 model User{ //usuarios
   id String @default(uuid()) @id
-  name String
+  name String @default("user")
   email String @unique
   dni String @unique
   password String
-  address String
-  phone String
+  address String @default("")
+  phone String @default("")
   role Role @default(USER)
   isActive Boolean @default(true)
   isDeleted Boolean @default(false)
@@ -72,6 +76,7 @@ model Product{ //productos
   detail String ?
   p_purchase Float
   p_sale Float 
+  stock Int @default(1)
   provider Provider @relation(fields: [providerId], references: [id])
   providerId String
   isDeleted Boolean @default(false)
@@ -90,6 +95,7 @@ model Budget{  //presupuesto
   detail String 
   productLine ProductLine[]
   totalAmount Float
+  status Status @default(PENDING)
   isDeleted Boolean @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt

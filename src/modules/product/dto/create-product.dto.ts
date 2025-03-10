@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
     IsNotEmpty,
     IsNumber,
@@ -21,21 +22,29 @@ export class CreateProductDto {
     @IsString({ message: 'Lla descripcion debe ser una cadena' })
     @IsOptional()
     @MinLength(10, { message: 'el detalle debe tener al menos 10 caracteres' })
-    @MaxLength(500, {
-      message: 'La detalle no puede exceder los 500 caracteres',
+    @MaxLength(250, {
+      message: 'La detalle no puede exceder los 250 caracteres',
     })
     detail: string;   
     @ApiProperty({ description: 'precio de compra', example: '22.11'})
     @IsNumber({maxDecimalPlaces:2})
     @IsPositive({message: 'el numero ingresado no debe ser negativo'})
     @IsNotEmpty()
+    @Transform(({ value }) => parseFloat(value)) 
     p_purchase: number;
 
     @ApiProperty({ description: 'precio de venta', example: '29.11'})
     @IsNumber({maxDecimalPlaces:2})
   @IsNotEmpty()
   @IsPositive({message: 'el numero ingresado no debe ser negativo'})
+  @Transform(({ value }) => parseFloat(value)) 
     p_sale: number;
+   
+    @ApiProperty({ description: 'stock del producto', example: '1'})
+    @IsNumber()
+    @IsNotEmpty() 
+    @Transform(({ value }) => parseInt(value)) 
+    stock: number;
 
     @ApiProperty({ description: 'identificador de proveedor', example: '1222112k1212k1222'})
     @IsUUID()

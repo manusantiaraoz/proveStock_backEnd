@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBudgetDto } from './dto/create-budget.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrinterService } from '../printer/printer.service';
 import { budgetPrinter } from '../printer/documents';
+import { Message } from 'node-mailjet';
 
 
 
@@ -23,6 +24,7 @@ export class BudgetService {
         detail: true,
         totalAmount:true,
         createdAt:true,
+        status:true,
         client:{
           select:{
             name: true,
@@ -58,6 +60,7 @@ export class BudgetService {
       }
     })
     
+
     return dataBudget
 
   }
@@ -122,6 +125,7 @@ export class BudgetService {
           id:true,
           detail: true,
           totalAmount:true,
+          status:true,
           client:{
             select:{
               name: true,
@@ -158,7 +162,7 @@ export class BudgetService {
       })
       return {dataBudget}
     }catch(e){
-      throw new Error(e);
+      throw new BadRequestException(e.message);
     }
     }
 
@@ -184,7 +188,40 @@ export class BudgetService {
       })
       return {message: 'presupuesto eliminado'}
     }catch(e){
-      throw new Error(e);
+      throw new BadRequestException(e.message);
+    }
+  }
+
+  async confirmBudget(id:string){
+    try{
+      const budget = await this.prisma.budget.findUnique({
+        where:{id, status:"PENDING"},
+        include:{user:true,productLine:{include:{product:true}}}
+      })
+      if(!budget){
+        throw new Error("no pudimos encontrar presupuesto pendiente")
+      }
+      await this.prisma.$transaction(async(tx)=>{
+        const productLine = budget.productLine
+        for(const prod of productLine){
+          const stockProduct = prod.product.stock
+          if(stockProduct == 0 || stockProduct<prod.quantity){
+            throw new Error (`${prod.product.name} sin stock disponible`)
+          }
+
+          await tx.product.update({
+            where: {id: prod.product.id},
+            data:{stock:{decrement:prod.quantity}}
+          })
+        }
+        await tx.budget.update({
+          where:{id: budget.id},
+          data:{status:"CONFIRM"}
+        })
+      })
+      return {Message:"presupuesto confirmado"}
+    }catch(e){
+      throw new BadRequestException(e.message);
     }
   }
 
@@ -196,7 +233,7 @@ export class BudgetService {
       return pdfDetail
 
     }catch(e){
-      throw new Error(e)
+      throw new BadRequestException(e.message);
     }
 
   }

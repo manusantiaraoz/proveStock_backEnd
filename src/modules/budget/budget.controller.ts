@@ -59,12 +59,18 @@ export class BudgetController {
   remove(@Param('id') id: string) {
     return this.budgetService.remove(id);
   }
+
+  @Post('confirm/:id')
+  confirm(@Param('id') id:string){
+    return this.budgetService.confirmBudget(id)
+  }
+
   @Post('print/:id')
   async print(@Param('id') id:string, @Res() res:Response):Promise<void>{
     try {
       const pdfBuffer = (await this.budgetService.printBudget(id));
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename=carrito_confirm.pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=proveStock.pdf');
       res.status(200).send(pdfBuffer);
   } catch (error) {
       console.error(error);
