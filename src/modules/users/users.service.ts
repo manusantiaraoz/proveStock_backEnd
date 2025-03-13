@@ -107,19 +107,35 @@ password: await  hashPassword(newUser.password)
   }
 
 
-  async remove(id: string) {
+  async suspender(id: string) {
     try{
     await this.prisma.user.update({
       where:{
         id,
       },
       data:{
-        isDeleted: true,
         isActive: false
       }
     })
     return {
-      message: 'el usuario se elimino correctamente'
+      message: 'el usuario se suspendio correctamente'
+    }
+    }catch(e){
+      throw new Error(e);
+    }
+  }
+  async active(id: string) {
+    try{
+    await this.prisma.user.update({
+      where:{
+        id,
+      },
+      data:{
+        isActive: true
+      }
+    }) 
+    return {
+      message: 'el usuario se suspendio correctamente'
     }
     }catch(e){
       throw new Error(e);

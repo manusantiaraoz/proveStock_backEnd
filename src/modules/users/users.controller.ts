@@ -80,8 +80,13 @@ export class UsersController {
     responseDescription: 'usuario found',
   })
   @Roles(RoleEnum.SUPERADMIN)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @Post('suspender/:id')
+  suspender(@Param('id') id: string) {
+    return this.usersService.suspender(id);
+  }
+  @Roles(RoleEnum.SUPERADMIN)
+  @Post('active/:id')
+  active(@Param('id') id: string) {
+    return this.usersService.active(id);
   }
 }

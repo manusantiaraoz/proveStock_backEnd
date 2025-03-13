@@ -20,6 +20,7 @@ constructor(
       const findUser = await this.prisma.user.findUnique({
         where: {
           email,
+          isActive:true
         },
       });
 

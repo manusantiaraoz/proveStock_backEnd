@@ -41,7 +41,7 @@ export const budgetPrinter = async (presupuesto: any): Promise<TDocumentDefiniti
   const { name: userName, phone: userPhone, address: userAddress, email: userEmail } = presupuesto.user;
   const { name: clientName, lastName: clientLastName, address: clientAddress, dni: clientDni, email: clientEmail } = presupuesto.client;
   const lineaProduct = presupuesto.productLine;
-  const fecha = `${createdAt.getDate()}/${createdAt.getMonth()}/${createdAt.getFullYear()}`
+  const fecha = `${createdAt.getDate()}/03/${createdAt.getFullYear()}`
 
   const tableBody = [
     [
