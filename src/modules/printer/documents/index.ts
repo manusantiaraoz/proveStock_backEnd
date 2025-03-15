@@ -116,6 +116,12 @@ export const budgetPrinter = async (presupuesto: any): Promise<TDocumentDefiniti
       marginTop: 10,
       style: 'subHeader',
     },
+    { 
+    text: ` nuestro trabajo tiene garantia de 3 meses a partir de la entrega trabajo realizado `,
+      alignment: 'center',
+      marginTop: 30,
+      style: 'subHeader',
+    },
     
   ];
 
